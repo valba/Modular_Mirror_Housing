@@ -214,22 +214,21 @@ module circular_mirror (w, h, l) {
 
 module elliptic_mirror (w, h, l) {
     w = w /2;
+    l = l;
+    z = l / sin(45);
     rotate(a = [180, -90, -90]) {
-    side = w  / sin(45) + l;
-        translate ([0, -side  / 2, (- side + l)/2 -l/2+0.001]) rotate(a = [-45, 0, 0]) {
+    side = w / sin(45) + z;
+        translate ([0, -side / 2, (-side + z)/2 - l/2 + 0.001]) rotate(a = [-45, 0, 0]) {
             intersection () {
                 difference () {
-                    cylinder(h = side *1.15, r = w/2);
-                    translate([-w, -w, l/sin(45)/2]) rotate ([45, 0 ,0]) cube  ([2 * side, 2 * side, 2 * side]);
+                    cylinder(h = side * 1.15, r = w/2);
+                    translate([-w, -w, z/2]) rotate ([45, 0 ,0]) cube  ([2 * side, 2 * side, 2 * side]);
                 }
-                translate([-w, -w, -l/sin(45)/2]) rotate ([45, 0 ,0]) cube  ([2 * side, 2 * side, 2 * side]);
+                translate([-w, -w, -z/2]) rotate ([45, 0 ,0]) cube  ([2 * side, 2 * side, 2 * side]);
             }    
-        
         }
-
     }
 }
-
 
 
 module mirror_plate () {
