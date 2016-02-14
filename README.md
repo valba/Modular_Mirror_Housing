@@ -9,4 +9,6 @@ Solid sample disc adapter must be resized to a factor of 0.9 in order to fit the
 
 Solid sample volume: 9x27.9x48.6 mm.
 
-OpenSCAD source file is parametric, so you can easily resize, modify, distort every detail of this holder to best suit your needs.
+Additional plate support for other mirror sizes and geometries (elliptic, rectangular and circular mirrors). 
+
+Source code is parametric, so you can easily resize, modify, distort every detail of this housing to best suit your needs (ie. to adapt it to a different mirror size and geometry).
