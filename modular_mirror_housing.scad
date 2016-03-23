@@ -3,9 +3,13 @@
 Mirror_Housing_Part = 1;// [0:No, 1:Yes]
 Mirror_Bottom_Holder_Part = 1;// [0:No, 1:Yes]
 Mirror_Top_Holder_Part = 1;// [0:No, 1:Yes]
-Long_Adapter_Part = 1;// [0:No, 1:Yes]
-Short_Adapter_Part = 1;// [0:No, 1:Yes]
+Long_Filter_Part = 1;// [0:No, 1:Yes]
+Short_Filter_Part = 1;// [0:No, 1:Yes]
 Mirror_Plate_Part = 1;// [0:No, 1:Yes]
+Pellet_Holder_Part = 1;// [0:No, 1:Yes]
+Long_Pellet_Holder_Part = 1;// [0:No, 1:Yes]
+Triangular_Housing_Part = 1;// [0:No, 1:Yes]
+Solid_Holder_Part = 1;// [0:No, 1:Yes]
 
 /* [HOUSING_PARAMETERS] */
 
@@ -113,23 +117,36 @@ if (Mirror_Housing_Part == 1) {
     echo("MIRROR HOUSING SIZE (L x W x H) = ", frame_thickness * 2, frame_width, block_height + frame_thickness + groove_width);
 }
 
+// TRIANGULAR HOUSING
+if (Triangular_Housing_Part == 1) {
+    translate ([- frame_width * 2, 0, 0]) rotate ([0, 0, 45]) 
+      triangular_housing();
+    echo("TRIANGULAR HOUSING SIZE (L x W x H) = ", frame_thickness * 2, frame_width, block_height + frame_thickness + groove_width);
+}
+
 //MIRROR PLATFORMS
 if (Mirror_Bottom_Holder_Part == 1)
-    translate ([250, 500, platform_thickness/2]) mirror_bottom_platform();
+    translate ([frame_width * 1.5, - frame_width * 1.5, platform_thickness/2]) mirror_bottom_platform();
 if (Mirror_Top_Holder_Part == 1)
-    translate ([-250, 500, platform_thickness/2]) mirror_top_platform();
+    translate ([frame_width * 1.5, frame_width * 1.5, platform_thickness/2]) mirror_top_platform();
 if (Mirror_Plate_Part == 1)
-    translate ([500, 0, frame_height/2]) mirror_plate();  
+    translate ([0, - frame_width * 1.5, frame_height/2]) mirror_plate();  
 
 //SAMPLE ADAPTERS
-if (Long_Adapter_Part == 1)
-    translate ([-500, 0, (block_height + groove_width)/2 + frame_thickness/2 - groove_width/2]) long_adapter();
-if (Short_Adapter_Part == 1)
-    translate ([0, -500, (block_height + groove_width)/2 + frame_thickness/2 - groove_width/2])  short_adapter();  
+if (Long_Filter_Part == 1)
+    translate ([- frame_width * 1.5, frame_width * 1.5, (block_height + groove_width)/2 + frame_thickness/2 - groove_width/2]) long_filter();
+if (Short_Filter_Part == 1)
+    translate ([- frame_width * 1.5, -frame_width * 1.5, (block_height + groove_width)/2 + frame_thickness/2 - groove_width/2])  short_filter();  
+if (Pellet_Holder_Part == 1)
+    translate ([0, frame_width * 1.5, frame_height/2]) pellet_holder();  
+if (Long_Pellet_Holder_Part == 1)
+    translate ([- frame_width * 3, frame_width * 1.5, frame_height/2]) long_pellet_holder();  
+if (Solid_Holder_Part == 1)
+    translate ([- frame_width * 3, - frame_width * 1.5, frame_height/2]) long_solid_holder();  
 
 // MIRROR HOUSING
 module mirror_housing() {
-difference() {
+  difference() {
     translate(block_center)
     block(block_width, block_width, block_height);
     translate(frame_center)
@@ -146,16 +163,88 @@ difference() {
     translate([-frame_width/4, 0, 10])
         rotate([180, 0, 90])
         letterBlock(make, size = 25 );
-}
+  }
 // FRAME FOR ADAPTERS
-translate(block_center + [frame_thickness + block_width/2, 0, 0]) 
+  translate(block_center + [frame_thickness + block_width/2, 0, 0]) 
     color ("white") sampleSupport();
 
 // ADAPTER POSITION
 //translate(block_center + [frame_thickness + block_width/2, 0, basement_height]) 
- //   color ("orange") short_adapter ();
+ //   color ("orange") short_filter ();
 
 }
+
+// TRIANGULAR HOUSING
+module triangular_housing() {
+  difference() {
+    union() {
+      difference() {
+    
+        translate ([frame_thickness_repaired/2 * sqrt(2)/2, - frame_thickness_repaired/2 * sqrt(2)/2, (block_height - frame_thickness)/2]) 
+          rotate ([0, 0, 45]) 
+            translate(block_center)  
+              cube ([block_width * sqrt(2), frame_thickness, frame_thickness], center = true);
+        translate ([3 * frame_thickness/2 * sqrt(2)/2, - 3 * frame_thickness/2 * sqrt(2)/2, (block_height - frame_thickness)/2]) 
+          rotate ([0, 0, 45]) 
+            translate(block_center)  
+              cube ([block_width * sqrt(2), frame_thickness, frame_thickness], center = true);
+        translate (block_center + [0, - block_width, 0.001]) block (block_width, block_width, block_height);
+        translate (block_center + [block_width, 0, 0.001]) block (block_width, block_width, block_height);
+      }
+      
+      difference() {
+        translate(block_center)
+          block(block_width, block_width, block_height);
+        translate(frame_center)
+          windowHoles();
+        translate(basement_center)
+          basementHole(screwhead_height, screwhead_radius, screwstem_height, screwstem_radius);
+
+        //VERTICAL GRAFFITI
+        //translate(basement_center + [0, frame_width/2 - 3 , 0])
+        //    rotate([90, 0, 180])
+        //    letterBlock(make, size = 20);
+
+        //BASE GRAFFITI
+        translate([-frame_width/4, 0, 10])
+          rotate([180, 0, 90])
+            letterBlock(make, size = 25 );
+      }
+    }
+    
+    translate(block_center) translate([block_width/2, -block_width/2, 0]) rotate([0, 0, 45]) block(block_width, block_width, block_height);
+    translate ([3 * frame_thickness/2 * sqrt(2)/2, - 3 * frame_thickness/2 * sqrt(2)/2, (block_height - frame_thickness)/2]) rotate ([0, 0, 45]) translate(block_center)  cube ([block_width * sqrt(2), frame_thickness, frame_thickness], center = true);
+
+    translate(frame_center){
+      //TOP frames
+      color("blue") 
+        translate([0,  -frame_width_repaired/2, window_height/2]) 
+          rotate (a = [90, 0, 90])
+            prism_z(bevel_width, bevel_height, window_width_repaired);
+      color("yellow") 
+        translate([frame_width_repaired/2, 0,  window_height/2]) 
+          rotate (a = [90, 0, 180])
+            prism_z(bevel_width, bevel_height, window_width_repaired);
+        
+       //TOP diagonal frame
+      color("blue") 
+        translate([frame_thickness_repaired * sin(45),  - frame_thickness_repaired * sin(45), window_height/2]) 
+          rotate (a = [90, 0, 135])
+            prism_z(bevel_width, bevel_height, (window_width_repaired +  frame_thickness_repaired) / sin(45));
+
+      //TOP cones
+      color("yellow") 
+        translate ([window_width/2 + chamfer, window_width/2, window_height/2]) 
+          rotate ([0, 90, 0]) 
+            cone();
+      color("blue") 
+        translate ([-window_width/2, -(window_width/2 + chamfer), window_height/2]) 
+          rotate ([90, 0, 0])
+            cone();
+    }
+  }  
+}
+
 function ngon(num, r) = [for (i=[0:num-1], a=i*360/num) [ r*cos(a), r*sin(a) ]];
 
 module cubic_torus(){
@@ -239,6 +328,62 @@ module mirror_plate () {
     }
  }
 
+module pellet_holder () {
+    difference(){
+            rotate ([0, 0, 45]) mainRoom (window_width, window_width, frame_height);
+            translate ([0, -window_width * sqrt(2)/2 + 0.001, 0]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ - groove_thickness/2 * sqrt(2), 0, 0]) rotate ([0, 0, 0]) groove();
+    }
+ }
+//long_pellet_holder ();
+
+module long_pellet_holder () {
+union(){
+    difference(){
+            translate ([0, 0,  frame_height / 2]) rotate ([0, 0, 45]) mainRoom (window_width, window_width, frame_height * 2);
+            translate ([0, -window_width * sqrt(2)/2 + 0.001,  frame_height]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ 0, 0, 0]) rotate ([0, 0, 0]) groove();
+            translate ([0, -window_width * sqrt(2)/2 + 0.001, 0]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ - groove_thickness/2 * sqrt(2), 0, 0]) rotate ([0, 0, 0]) groove();
+    }
+       difference(){
+            rotate ([0, 0, 45]) mainRoom (window_width, window_width, frame_height);
+            translate ([0, -window_width * sqrt(2)/2 + 0.001, 0]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ - groove_thickness/2 * sqrt(2), 0, 0]) rotate ([0, 0, 0]) groove();
+    }
+} 
+ }
+
+module long_solid_holder () {
+union(){
+    difference(){
+            translate ([0, 0,  frame_height / 2]) rotate ([0, 0, 45]) mainRoom (window_width, window_width, frame_height * 2);
+            translate ([0, -window_width * sqrt(2)/2 + 0.001,  frame_height]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ 0, 0, 0]) rotate ([0, 0, 0]) solid_groove();
+            translate ([0, -window_width * sqrt(2)/2 + 0.001, 0]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ - groove_thickness/2 * sqrt(2), 0, 0]) rotate ([0, 0, 0]) solid_groove();
+    }
+       difference(){
+            rotate ([0, 0, 45]) mainRoom (window_width, window_width, frame_height);
+            translate ([0, -window_width * sqrt(2)/2 + 0.001, 0]) prism_z (window_width * sqrt(2), window_width * sqrt(2), frame_height);
+            translate ([ - groove_thickness/1.5 * sqrt(2), 0, 0]) rotate ([0, 0, 0]) groove();
+           translate ([ - groove_thickness/1.5 * sqrt(2), 0, 0]) rotate ([0, 0, 0]) 
+           difference () { 
+              solid_groove();
+              translate([frame_thickness * 3/2 - groove_thickness/1.5 *sqrt(2), 0, 0]) cube([100, 1000, 1000], center = true);
+           }
+   
+ //          difference () { 
+ //              solid_groove();
+ //              cube([100, 100, 10]);
+//           }
+               
+    }
+} 
+ }
+
+
+
 module sampleSupport () {
     difference() {
         translate([-frame_thickness * 0.25, 0, 0])
@@ -256,7 +401,7 @@ module sampleSupport () {
 */    }
 }
 
-module long_adapter() {
+module long_filter() {
     difference() {
         union() {
             translate([0, 0, -frame_thickness]) slot3(); 
@@ -267,9 +412,9 @@ module long_adapter() {
     }
 }
 
-module short_adapter() {
+module short_filter() {
     difference() {
-        long_adapter();
+        long_filter();
         translate([0, 0, frame_thickness/2 + block_height/2 + groove_width/2]) 
         cube ([frame_thickness * 2, frame_width, groove_width * 2], center = true);
     }
@@ -290,6 +435,27 @@ module groove() {
         cylinder(h = frame_thickness * 3, r1 = groove_width * 0.22, r2 = groove_width * 0.44, center = true);
         cylinder(h = groove_thickness, r1 = groove_width/2, r2 = groove_width/2, center = true);
     }
+	translate([0, 0, groove_height/2]) 
+		rotate (a = [0, 0, 0]) 
+			cube([groove_thickness, groove_width, groove_height], center = true);
+	translate([0, 0, groove_height]) 
+    rotate (a = [0, 90, 0]) 
+        cylinder(h = groove_thickness, r1 = groove_width/2, r2 = groove_width/2, center = true);
+}
+
+   
+module solid_groove() {
+    hull(){
+    rotate (a = [0, 90, 0]) {
+        cylinder(h = frame_thickness * 3, r1 = groove_width * 0.22, r2 = groove_width * 0.7, center = true);
+        cylinder(h = groove_thickness, r1 = groove_width/2, r2 = groove_width/2, center = true);
+    }
+    translate([0, 0, groove_height]) 
+      rotate (a = [0, 90, 0]) {
+        cylinder(h = frame_thickness * 3, r1 = groove_width * 0.22, r2 = groove_width * 0.7, center = true);
+        cylinder(h = groove_thickness, r1 = groove_width/2, r2 = groove_width/2, center = true);
+    }
+}
 	translate([0, 0, groove_height/2]) 
 		rotate (a = [0, 0, 0]) 
 			cube([groove_thickness, groove_width, groove_height], center = true);
@@ -389,6 +555,14 @@ module windowHoles() {
         wHoleA();
         wHoleB();
         wHoleC();
+        hFrames();
+        vFrames();
+        cones();
+    }
+}
+
+module windowFrames() {
+    union() {
         hFrames();
         vFrames();
         cones();
